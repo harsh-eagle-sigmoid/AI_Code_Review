@@ -5,7 +5,10 @@ from langchain.prompts import ChatPromptTemplate
 llm = ChatGroq(
     api_key=os.environ["GROQ_API_KEY"],
     model="llama3-8b-8192",
-    temperature=0
+    temperature=0,
+    client_kwargs={
+        "proxies": None
+    }
 )
 
 prompt = ChatPromptTemplate.from_template(
