@@ -1,32 +1,32 @@
 import type { Issue } from "../api/client";
 
-type BugListProps = {
+interface BugListProps {
   issues: Issue[];
-};
+}
 
-const BugList = ({ issues }: BugListProps) => {
+export default function BugList({ issues }: BugListProps) {
   if (!issues || issues.length === 0) {
-    return <p className="p-4 text-green-400">No issues found 🎉</p>;
+    return <p style={{ marginTop: 16, color: "green" }}>No issues found 🎉</p>;
   }
 
   return (
-    <div className="p-4 space-y-4">
-      {issues.map((bug, index) => (
+    <div style={{ marginTop: 24 }}>
+      {issues.map((bug, idx) => (
         <div
-          key={index}
-          className="p-4 bg-red-500/10 rounded-xl border-l-4 border-red-500"
+          key={idx}
+          style={{
+            padding: 12,
+            borderLeft: "4px solid red",
+            marginBottom: 12,
+          }}
         >
-          <div className="font-bold">
+          <strong>
             Line {bug.line} — {bug.severity}
-          </div>
+          </strong>
           <p>{bug.description}</p>
-          <p className="text-sm opacity-70">
-            Fix: {bug.suggestion}
-          </p>
+          <small>Fix: {bug.suggestion}</small>
         </div>
       ))}
     </div>
   );
-};
-
-export default BugList;
+}
