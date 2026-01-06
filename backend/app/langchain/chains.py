@@ -1,9 +1,3 @@
-import os
-
-# 🚨 CRITICAL FIX: remove Railway-injected proxy vars
-for key in ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy"]:
-    os.environ.pop(key, None)
-
 from langchain_groq import ChatGroq
 from langchain.prompts import ChatPromptTemplate
 
@@ -15,11 +9,11 @@ llm = ChatGroq(
 
 prompt = ChatPromptTemplate.from_template(
     """
-You are a senior software engineer performing static code analysis.
+You are a senior code reviewer.
 
-Analyze the following code and return JSON with:
-- issues: list of detected issues with line, severity, description
-- summary: short overall summary
+Review the following code and return JSON with:
+- issues: list of issues with line, severity, description
+- summary: short summary
 
 Code:
 {code}
