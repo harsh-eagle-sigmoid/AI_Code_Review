@@ -1,24 +1,25 @@
 import os
 from langchain_groq import ChatGroq
-from langchain.prompts import ChatPromptTemplate
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 
 llm = ChatGroq(
-    api_key=os.environ["GROQ_API_KEY"],
-    model="llama3-8b-8192",
-    temperature=0,
+    groq_api_key=os.environ["GROQ_API_KEY"],
+    model_name="llama3-70b-8192"
 )
 
-prompt = ChatPromptTemplate.from_template(
-    """
-You are a senior code reviewer.
-
-Review the following code and return JSON with:
-- issues: list of issues with line, severity, description
-- summary: short summary
+prompt = PromptTemplate(
+    input_variables=["code"],
+    template="""
+You are an expert code reviewer.
+Analyze the following code and list bugs, issues, and improvements.
 
 Code:
 {code}
 """
 )
 
-review_chain = prompt | llm
+review_chain = LLMChain(
+    llm=llm,
+    prompt=prompt
+)
