@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================= */
+/* Hover-only glow utilities     */
+/* ============================= */
+
+@layer utilities {
+  .glow-card {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .glow-hover:hover {
+    transform: translateY(-4px);
+  }
+
+  .glow-cyan:hover {
+    box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.6),
+                0 0 20px rgba(34, 211, 238, 0.35);
+  }
+
+  .glow-red:hover {
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.6),
+                0 0 20px rgba(239, 68, 68, 0.35);
+  }
+
+  .glow-yellow:hover {
+    box-shadow: 0 0 0 1px rgba(234, 179, 8, 0.6),
+                0 0 20px rgba(234, 179, 8, 0.35);
+  }
+
+  .glow-green:hover {
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.6),
+                0 0 20px rgba(34, 197, 94, 0.35);
+  }
+}
