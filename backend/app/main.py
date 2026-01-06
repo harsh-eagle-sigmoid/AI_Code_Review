@@ -4,19 +4,14 @@ from pydantic import BaseModel
 
 from app.langchain.chains import review_chain
 
-# -------------------------
-# App initialization
-# -------------------------
-app = FastAPI(title="AI Code Review API")
+app = FastAPI()
 
-# -------------------------
-# CORS CONFIG (VERY IMPORTANT)
-# -------------------------
+# ✅ CORS (already correct, keep it)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://ai-code-review-z5wd.vercel.app",   # Vercel frontend
-        "http://localhost:5173",                    # Vite local
+        "https://ai-code-review-z5wd.vercel.app",
+        "http://localhost:5173",
         "http://localhost:3000",
     ],
     allow_credentials=True,
@@ -24,34 +19,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# -------------------------
-# Request schema
-# -------------------------
+# ✅ Health check (Railway needs this)
+@app.get("/")
+def health():
+    return {"status": "ok"}
+
+# ✅ Request schema
 class ReviewRequest(BaseModel):
     code: str
 
-# -------------------------
-# Routes
-# -------------------------
-@app.get("/")
-def health_check():
-    return {"status": "ok"}
-
+# ✅ Review endpoint (SAFE)
 @app.post("/review")
-async def review_code(req: ReviewRequest):
-    if not req.code.strip():
-        raise HTTPException(status_code=400, detail="Code is empty")
-
+def review_code(req: ReviewRequest):
     try:
         result = review_chain.invoke({"code": req.code})
 
-        # LangChain returns {"text": "..."}
+        # LangChain returns dict with "text"
         return {
             "review": result["text"]
         }
 
     except Exception as e:
+        # 🔥 CRITICAL: never let FastAPI crash
+        print("REVIEW ERROR:", str(e))
         raise HTTPException(
             status_code=500,
-            detail=str(e)
+            detail="AI review failed. Please try again."
         )
