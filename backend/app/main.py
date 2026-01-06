@@ -5,7 +5,7 @@ from app.langchain.chains import review_chain
 
 app = FastAPI()
 
-# CORS (Vercel + local)
+# CORS (Vercel + Railway)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,7 +15,7 @@ app.add_middleware(
 )
 
 class ReviewRequest(BaseModel):
-    code: str
+    diff: str   # frontend sends `diff`
 
 @app.get("/")
 def root():
@@ -24,19 +24,23 @@ def root():
 @app.post("/review")
 async def review_code(req: ReviewRequest):
     try:
-        result = review_chain.invoke({"code": req.code})
+        result = review_chain.invoke({"code": req.diff})
 
-        # 🔒 SAFE RESPONSE SHAPE (frontend expects this)
+        # ✅ MATCH FRONTEND SHAPE EXACTLY
         return {
-            "summary": result.get("text", ""),
-            "issues": [],   # ALWAYS an array
-            "score": 90     # SAFE default score
+            "review": {
+                "score": 90,
+                "bugs": [],
+                "summary": result.get("text", "")
+            }
         }
 
     except Exception as e:
         print("REVIEW ERROR:", e)
         return {
-            "summary": "Review failed",
-            "issues": [],
-            "score": 0
+            "review": {
+                "score": 0,
+                "bugs": [],
+                "summary": "Review failed"
+            }
         }
