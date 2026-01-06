@@ -1,29 +1,27 @@
 import os
+from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
-
-for k in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
-    os.environ.pop(k, None)
+from dotenv import load_dotenv
+load_dotenv()
 
 llm = ChatGroq(
-    model="llama3-8b-8192",
     api_key=os.environ["GROQ_API_KEY"],
+    model="llama-3.1-8b-instant",
     temperature=0,
 )
 
 prompt = PromptTemplate(
     input_variables=["code"],
     template="""
-You are an expert code reviewer.
-Analyze the following code and list bugs, issues, and improvements.
+You are a senior software engineer.
+Review the following code and return:
+1. Critical bugs
+2. Warnings
+3. Clean suggestions
 
 Code:
 {code}
 """
 )
 
-review_chain = LLMChain(
-    llm=llm,
-    prompt=prompt
-)
+review_chain = prompt | llm
