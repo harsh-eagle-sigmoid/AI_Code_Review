@@ -1,15 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from app.langchain.chains import review_chain
 
 app = FastAPI()
 
-# ---------- CORS (Railway + Vercel) ----------
+# ---------- CORS ----------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # OK for demo / portfolio
+    allow_origins=["*"],  # OK for portfolio / demo
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -29,35 +29,31 @@ def root():
 @app.post("/review")
 async def review_code(req: ReviewRequest):
     try:
-        # ✅ Accept BOTH `code` and `diff`
+        # Accept BOTH `code` and `diff`
         source_code = req.code or req.diff
 
-        if not source_code:
+        if not source_code or not source_code.strip():
             return {
-                "review": {
-                    "score": 0,
-                    "bugs": [],
-                    "summary": "No code provided"
-                }
+                "summary": "No code provided",
+                "bugs": []
             }
 
-        result = review_chain.invoke({"code": source_code})
+        # SINGLE invocation (very important)
+        result: Dict[str, Any] = review_chain.invoke(
+            {"code": source_code}
+        )
 
-        # ✅ Always return what frontend expects
+        # HARD guarantee of response shape
         return {
-            "review": {
-                "score": 90,
-                "bugs": [],
-                "summary": result.get("text", "")
-            }
+            "summary": result.get("summary", "Review completed"),
+            "bugs": result.get("bugs", [])
+            if isinstance(result.get("bugs"), list)
+            else []
         }
 
     except Exception as e:
         print("REVIEW ERROR:", e)
         return {
-            "review": {
-                "score": 0,
-                "bugs": [],
-                "summary": "Internal review error"
-            }
+            "summary": "AI review failed. Please try again.",
+            "bugs": []
         }
