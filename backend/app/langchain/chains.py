@@ -1,27 +1,31 @@
-import os
-from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq
-from dotenv import load_dotenv
-load_dotenv()
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+import os
 
 llm = ChatGroq(
-    api_key=os.environ["GROQ_API_KEY"],
-    model="llama3-70b-8192",
-    temperature=0,
+    model="llama-3.1-8b-instant",
+    temperature=0.2,
+    groq_api_key=os.environ["GROQ_API_KEY"]
 )
 
 prompt = PromptTemplate(
     input_variables=["code"],
     template="""
-You are a senior software engineer.
-Review the following code and return:
-1. Critical bugs
-2. Warnings
-3. Clean suggestions
+You are an expert senior software engineer.
+
+Review the following code and provide:
+1. Bugs
+2. Improvements
+3. Security issues
+4. Final summary
 
 Code:
 {code}
 """
 )
 
-review_chain = prompt | llm
+review_chain = LLMChain(
+    llm=llm,
+    prompt=prompt
+)
