@@ -1,18 +1,15 @@
 fastapi==0.110.0
 uvicorn==0.27.1
 python-dotenv==1.0.1
-
-# pydantic v1 ONLY
 pydantic==1.10.13
 
-# LangChain – aligned versions
 langchain==0.1.16
-langchain-core==0.1.48
-langchain-community==0.0.36
-
-# Groq
+langchain-core==0.1.45
+langchain-community==0.0.34
 langchain-groq==0.1.3
-groq==0.4.2
+
+groq==0.4.1
+httpx==0.27.0
 
 requests==2.31.0
 tenacity==8.2.3
