@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { api } from "../api/client";
+import api from "../api/client";
 import BugList from "../components/BugList";
 import ResultCard from "../components/ResultCard";
+import type { Issue } from "../api/client";
 
 export default function Dashboard() {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<{
+    summary: string;
+    issues: Issue[];
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const runReview = async () => {
@@ -19,12 +23,9 @@ export default function Dashboard() {
     setError(null);
 
     try {
-      const response = await api.post("/review", {
-        diff: code,
-      });
-
-      setResult(response.data.review);
-    } catch (err) {
+      const response = await api.post("/review", { code });
+      setResult(response.data);
+    } catch {
       setError("AI review failed");
     } finally {
       setLoading(false);
@@ -35,7 +36,6 @@ export default function Dashboard() {
     <div style={{ padding: "24px", maxWidth: "900px", margin: "auto" }}>
       <h1>AI Code Review Platform</h1>
 
-      {/* CODE INPUT */}
       <textarea
         rows={12}
         style={{ width: "100%", marginTop: "16px" }}
@@ -58,8 +58,8 @@ export default function Dashboard() {
 
       {result && (
         <>
-          <ResultCard score={result.score} />
-          <BugList bugs={result.bugs} />
+          <ResultCard summary={result.summary} issues={result.issues} />
+          <BugList issues={result.issues} />
         </>
       )}
     </div>

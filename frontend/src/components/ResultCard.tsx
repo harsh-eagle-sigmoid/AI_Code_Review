@@ -12,7 +12,9 @@ export default function ResultCard({ summary, issues }: ResultCardProps) {
     <div className="mt-6 bg-gray-900/80 rounded-2xl border border-gray-700 p-6">
       <h3 className="text-xl font-bold mb-2">Review Summary</h3>
 
-      <p className="text-gray-300 mb-4">{summary || "No summary available"}</p>
+      <p className="text-gray-300 mb-4">
+        {summary || "No summary available"}
+      </p>
 
       <div className="flex items-center space-x-6">
         <div>

@@ -6,11 +6,7 @@ interface BugListProps {
 
 export default function BugList({ issues }: BugListProps) {
   if (issues.length === 0) {
-    return (
-      <p className="p-4 text-green-400">
-        No issues found 🎉
-      </p>
-    );
+    return <p className="p-4 text-green-400">No issues found 🎉</p>;
   }
 
   return (
