@@ -6,25 +6,23 @@ interface BugListProps {
 
 export default function BugList({ issues }: BugListProps) {
   if (!issues || issues.length === 0) {
-    return <p style={{ marginTop: 16, color: "green" }}>No issues found 🎉</p>;
+    return <p className="p-4 text-green-400">No issues found 🎉</p>;
   }
 
   return (
-    <div style={{ marginTop: 24 }}>
-      {issues.map((bug, idx) => (
+    <div className="p-4 space-y-4">
+      {issues.map((bug, index) => (
         <div
-          key={idx}
-          style={{
-            padding: 12,
-            borderLeft: "4px solid red",
-            marginBottom: 12,
-          }}
+          key={index}
+          className="p-4 bg-gradient-to-r from-red-500/10 to-red-600/10 rounded-xl border-l-4 border-red-500"
         >
-          <strong>
+          <div className="font-bold">
             Line {bug.line} — {bug.severity}
-          </strong>
-          <p>{bug.description}</p>
-          <small>Fix: {bug.suggestion}</small>
+          </div>
+          <p className="text-gray-300">{bug.description}</p>
+          <p className="text-gray-400 text-sm">
+            Fix: {bug.suggestion}
+          </p>
         </div>
       ))}
     </div>
