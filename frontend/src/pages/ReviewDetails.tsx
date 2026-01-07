@@ -19,12 +19,21 @@ export default function ReviewDetails() {
     setStatus("running");
     const start = Date.now();
 
-    const res = await reviewCode(code);
+    try {
+      const res = await reviewCode(code);
 
-    setIssues(res.issues);
-    setExecutionTime(Date.now() - start);
-    setLoading(false);
-    setStatus("done");
+      // ✅ FIX: backend returns `bugs`, not `issues`
+      setIssues(Array.isArray(res.bugs) ? res.bugs : []);
+
+      setExecutionTime(Date.now() - start);
+      setStatus("done");
+    } catch (err) {
+      console.error("Review failed:", err);
+      setIssues([]);
+      setStatus("idle");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Keyboard shortcut: Ctrl/Cmd + Enter
@@ -58,7 +67,6 @@ export default function ReviewDetails() {
             </div>
 
             <div className="flex items-center gap-4">
-              {/* STATUS */}
               {status === "running" && (
                 <span className="flex items-center gap-2 text-yellow-400">
                   <Loader2 className="animate-spin w-4 h-4" />
@@ -83,7 +91,7 @@ export default function ReviewDetails() {
         {/* MAIN GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* CODE PANEL (PRIMARY) */}
+          {/* CODE PANEL */}
           <div className="lg:col-span-2 bg-gray-900/90 rounded-2xl border border-gray-700 shadow-2xl
                           glow-card glow-hover glow-cyan">
             <textarea
@@ -110,7 +118,7 @@ export default function ReviewDetails() {
             </div>
           </div>
 
-          {/* DEBUG PANEL (SECONDARY) */}
+          {/* DEBUG PANEL */}
           <div className="bg-gray-900/70 rounded-2xl border border-gray-700 shadow-2xl
                           glow-card glow-hover glow-red">
             <div className="p-4 border-b border-gray-700 flex items-center gap-2">
@@ -146,7 +154,7 @@ export default function ReviewDetails() {
           </div>
         </div>
 
-        {/* STATS PANEL (TERTIARY) */}
+        {/* STATS PANEL */}
         <StatsPanel issues={issues} code={code} />
 
       </div>

@@ -31,23 +31,7 @@ async def review_code(req: ReviewRequest):
     source_code = req.code or req.diff
 
     if not source_code:
-        return {
-            "summary": "No code provided",
-            "bugs": []
-        }
+        return {"summary": "No code provided", "bugs": []}
 
-    try:
-        result = review_chain.invoke({"code": source_code})
-
-        # 🔒 HARD NORMALIZATION
-        return {
-            "summary": result.get("summary", "Review completed"),
-            "bugs": result.get("bugs", []) if isinstance(result.get("bugs"), list) else []
-        }
-
-    except Exception as e:
-        print("REVIEW ERROR:", e)
-        return {
-            "summary": "AI review failed",
-            "bugs": []
-        }
+    result = review_chain(source_code)
+    return result
